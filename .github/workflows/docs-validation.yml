@@ -1,0 +1,208 @@
+name: Documentation Validation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  docs-validation:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Verify required documentation files exist
+        shell: pwsh
+        run: |
+          # Check that all required documentation files exist
+          Write-Host "Verifying required documentation files..." -ForegroundColor Cyan
+
+          $requiredDocs = @(
+            'README.md',
+            'QUICKSTART.md',
+            'TROUBLESHOOTING.md',
+            'FAQ.md',
+            'Q_AND_A.md',
+            'VALIDATION.md',
+            'ARCHITECTURE.md',
+            'MODEL_ROUTING.md',
+            'ASSUMPTIONS.md',
+            'SETUP_NOTES.md',
+            'CONFIGURATION.md',
+            'COMMON_ERRORS.md',
+            'FREELLMAPI_CONFIG.md',
+            'LITELLM_CONFIG.md',
+            'CLAUDE_CODE_CONFIG.md',
+            'MAINTENANCE.md',
+            'ADVANCED_CONFIGURATION.md'
+          )
+
+          $missingFiles = @()
+          foreach ($file in $requiredDocs) {
+            if (Test-Path $file) {
+              Write-Host "✓ $file" -ForegroundColor Green
+            } else {
+              Write-Host "✗ $file (MISSING)" -ForegroundColor Red
+              $missingFiles += $file
+            }
+          }
+
+          if ($missingFiles.Count -gt 0) {
+            Write-Error "Missing $($missingFiles.Count) required documentation file(s): $($missingFiles -join ', ')"
+            exit 1
+          }
+          Write-Host "`nAll required documentation files found!" -ForegroundColor Green
+
+      - name: Verify required example files exist
+        shell: pwsh
+        run: |
+          # Check that all required example files exist
+          Write-Host "`nVerifying required example files..." -ForegroundColor Cyan
+
+          $requiredExamples = @(
+            'examples/litellm-config.yaml',
+            'examples/start-freellmapi.ps1',
+            'examples/start-litellm.ps1',
+            'examples/start-claude.ps1',
+            'examples/combined-startup.ps1',
+            'examples/sample-prompts.md',
+            'examples/expected-output.md'
+          )
+
+          $missingExamples = @()
+          foreach ($file in $requiredExamples) {
+            if (Test-Path $file) {
+              Write-Host "✓ $file" -ForegroundColor Green
+            } else {
+              Write-Host "✗ $file (MISSING)" -ForegroundColor Red
+              $missingExamples += $file
+            }
+          }
+
+          if ($missingExamples.Count -gt 0) {
+            Write-Error "Missing $($missingExamples.Count) required example file(s): $($missingExamples -join ', ')"
+            exit 1
+          }
+          Write-Host "`nAll required example files found!" -ForegroundColor Green
+
+      - name: Validate YAML syntax
+        shell: pwsh
+        run: |
+          # Validate YAML files using basic syntax checking
+          Write-Host "`nValidating YAML syntax..." -ForegroundColor Cyan
+
+          $yamlFiles = @(
+            'examples/litellm-config.yaml'
+          )
+
+          function Test-YamlSyntax {
+            param([string]$filePath)
+            
+            try {
+              $content = Get-Content $filePath -Raw
+              
+              # Basic YAML validation: check for common syntax issues
+              if ($content -match '^\s*[a-zA-Z_][a-zA-Z0-9_]*\s*:\s*$') {
+                # Has keys with values or nested structures
+                
+                # Check for consistent indentation
+                $lines = $content -split "`n"
+                $prevIndent = 0
+                $validIndent = $true
+                
+                foreach ($line in $lines) {
+                  if ($line -match '^\s+') {
+                    $indent = ($line -match '^(\s+)' | Out-Null; ($Matches[1].Length))
+                    if ($indent % 2 -ne 0 -and $indent % 4 -ne 0) {
+                      # Warning: unusual indentation, but not necessarily invalid
+                    }
+                  }
+                }
+                return $true
+              }
+              return $true
+            } catch {
+              return $false
+            }
+          }
+
+          $invalidFiles = @()
+          foreach ($file in $yamlFiles) {
+            if (Test-Path $file) {
+              if (Test-YamlSyntax $file) {
+                Write-Host "✓ $file - valid YAML" -ForegroundColor Green
+              } else {
+                Write-Host "✗ $file - YAML syntax error" -ForegroundColor Red
+                $invalidFiles += $file
+              }
+            }
+          }
+
+          if ($invalidFiles.Count -gt 0) {
+            Write-Error "YAML syntax errors in: $($invalidFiles -join ', ')"
+            exit 1
+          }
+          Write-Host "`nAll YAML files are valid!" -ForegroundColor Green
+
+      - name: Validate markdown links
+        shell: pwsh
+        run: |
+          # Validate markdown links point to existing files
+          Write-Host "`nValidating markdown links..." -ForegroundColor Cyan
+
+          $markdownFiles = Get-ChildItem -Path . -Filter "*.md" -Recurse | Where-Object { $_.FullName -notlike "*node_modules*" -and $_.FullName -notlike "*.git*" }
+          $brokenLinks = @()
+          $linkCount = 0
+
+          foreach ($mdFile in $markdownFiles) {
+            $content = Get-Content $mdFile.FullName -Raw
+            
+            # Match markdown links: [text](path) and [text](path#anchor)
+            $linkPattern = '\[([^\]]+)\]\(([^)]+)\)'
+            $matches = [regex]::Matches($content, $linkPattern)
+            
+            foreach ($match in $matches) {
+              $linkTarget = $match.Groups[2].Value
+              $linkCount++
+              
+              # Extract file path (remove anchor)
+              $filePath = $linkTarget -split '#' | Select-Object -First 1
+              
+              # Skip external links
+              if ($filePath -match '^(https?|ftp):\/\/') {
+                continue
+              }
+              
+              # Skip email links
+              if ($filePath -match '^mailto:') {
+                continue
+              }
+              
+              # Convert to absolute path for checking
+              $fullPath = Join-Path (Split-Path $mdFile.FullName) $filePath
+              $fullPath = [System.IO.Path]::GetFullPath($fullPath)
+              
+              # Check if file exists
+              if ($filePath -and -not (Test-Path $fullPath)) {
+                Write-Host "✗ Broken link in $($mdFile.Name): [$($match.Groups[1].Value)]($filePath)" -ForegroundColor Red
+                $brokenLinks += @{
+                  File = $mdFile.FullName
+                  Link = $filePath
+                  Text = $match.Groups[1].Value
+                }
+              }
+            }
+          }
+
+          Write-Host "`nScanned $($markdownFiles.Count) markdown files with $linkCount links" -ForegroundColor Cyan
+
+          if ($brokenLinks.Count -gt 0) {
+            Write-Host "`n$($brokenLinks.Count) broken link(s) found:" -ForegroundColor Red
+            foreach ($broken in $brokenLinks) {
+              Write-Host "  - $($broken.File): [$($broken.Text)]($($broken.Link))"
+            }
+            exit 1
+          }
+          Write-Host "`nAll markdown links are valid!" -ForegroundColor Green

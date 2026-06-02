@@ -1,0 +1,76 @@
+# Secrets
+
+.env
+.env.*
+*.env
+.fcc_env
+.fcc_env.*
+*.key
+*.pem
+*.token
+
+# Python
+
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# UV
+
+.python-version
+
+# Node
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# LiteLLM
+
+litellm.db
+*.sqlite
+*.sqlite3
+
+# Logs
+
+logs/
+*.log
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# VS Code
+
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+
+# Claude
+
+.claude/
+.claude-cache/
+.claude.json
+
+# Build
+
+dist/
+build/
+coverage/
+
+# Temporary
+
+tmp/
+temp/
+*.tmp
+
+# PowerShell history
+
+ConsoleHost_history.txt

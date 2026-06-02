@@ -1,0 +1,64 @@
+# LiteLLM Configuration (example)
+
+# Purpose:
+# LiteLLM is used as a compatibility bridge between Anthropic/Claude-format
+# clients (like Claude Code) and OpenAI-style backends. It performs three
+# primary tasks:
+#  - Translates Anthropic request/response formats to OpenAI-compatible shapes
+#  - Maps Claude model names to backend model IDs
+#  - Optionally drops unsupported Anthropic parameters so backends don't error
+
+litellm_settings:
+  # When true, LiteLLM will remove Anthropic-specific request parameters
+  # that are not supported by OpenAI-style providers (for example: some
+  # Anthropic-only sampling or safety fields). This helps maintain
+  # compatibility when routing to generic backends.
+  drop_params: true
+
+# Providers configuration: use an OpenAI-compatible provider that routes to
+# a FreeLLMAPI example endpoint. Use placeholders for API keys.
+providers:
+  custom_openai:
+    # Example FreeLLMAPI URL (replace when deploying). This points at the
+    # FreeLLMAPI HTTP gateway used in the documentation examples.
+    url: "http://127.0.0.1:3001/v1"
+    # Placeholder API key (do NOT commit real secrets)
+    api_key: "YOUR_FREELLMAPI_API_KEY"
+    # Optional additional headers to send with each request
+    headers:
+      Authorization: "Bearer YOUR_FREELLMAPI_API_KEY"
+
+# Model translation: map Claude model names to backend model identifiers.
+# When a request targets a Claude model, LiteLLM will translate it to the
+# configured backend model and route the request through the selected
+# provider (above).
+model_mappings:
+  "claude-opus-4-8": "gpt-4o"
+  "claude-sonnet-4-0": "gpt-4o-mini"
+  "claude-3-5-haiku": "gpt-4o-mini"
+
+# Optional: per-model explicit settings. These entries demonstrate how to
+# associate a Claude-facing model name with a provider and a backend model.
+model_list:
+  - model_name: claude-opus-4-8
+    litellm_params:
+      provider: custom_openai
+      model: "gpt-4o"
+
+  - model_name: claude-sonnet-4-0
+    litellm_params:
+      provider: custom_openai
+      model: "gpt-4o-mini"
+
+  - model_name: claude-3-5-haiku
+    litellm_params:
+      provider: custom_openai
+      model: "gpt-4o-mini"
+
+# Notes:
+# - `drop_params` ensures requests that include Anthropic-only parameters are
+#   sanitized before reaching the backend.
+# - Model translation maps user-facing Claude model identifiers to the
+#   backend model names that FreeLLMAPI (or other providers) understand.
+# - The `custom_openai` provider shown here points to a local FreeLLMAPI
+#   example endpoint at http://127.0.0.1:3001/v1; adjust when deploying.
