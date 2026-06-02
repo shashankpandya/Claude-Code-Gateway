@@ -47,3 +47,7 @@ This guide will help you get started with setting up Claude Code with FreeLLMAPI
    ```
 
 For more detailed instructions, see the [Full Installation Guide](guides/02-installation-windows.md).
+
+---
+
+**Need a visual reference?** Check out the [Setup Showcase](docs/setup-showcase.md) to see what a successful configuration looks like.

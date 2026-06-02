@@ -36,7 +36,8 @@ jobs:
             'LITELLM_CONFIG.md',
             'CLAUDE_CODE_CONFIG.md',
             'MAINTENANCE.md',
-            'ADVANCED_CONFIGURATION.md'
+            'ADVANCED_CONFIGURATION.md',
+            'docs/setup-showcase.md'
           )
 
           $missingFiles = @()

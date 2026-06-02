@@ -2,7 +2,7 @@
 
 Run Claude Code using FreeLLMAPI + LiteLLM with Anthropic-compatible routing, model translation, troubleshooting guides, and Windows setup instructions.
 
-[Quick Start](#quick-start) | [Architecture](#architecture-overview) | [Troubleshooting](#troubleshooting) | [Validation](#validation)
+[Quick Start](#quick-start) | [Architecture](#architecture-overview) | [Troubleshooting](#troubleshooting) | [Validation](#validation) | [Setup Showcase](docs/setup-showcase.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Issues](https://img.shields.io/github/issues/shashankpandya/claude-code-freellmapi.svg)](https://github.com/shashankpandya/claude-code-freellmapi/issues)
