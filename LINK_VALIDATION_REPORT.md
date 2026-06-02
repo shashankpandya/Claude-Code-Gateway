@@ -83,7 +83,7 @@ All broken internal documentation links have been identified, fixed, and verifie
 
 ### 2. docs/common-errors.md
 
-**Previous Link**: `[Common Errors Guide](../COMMON_ERRORS.md)` - File didn't exist
+**Previous Link**: `[Common Errors Guide](COMMON_ERRORS.md)` - File didn't exist
 
 **Action Taken**:
 
@@ -97,7 +97,7 @@ All broken internal documentation links have been identified, fixed, and verifie
 
 ### 3. guides/03-freellmapi-config.md
 
-**Previous Link**: `[FreeLLMAPI Configuration Guide](../FREEllmapi-config.md)` - File didn't exist (inconsistent capitalization)
+**Previous Link**: `[FreeLLMAPI Configuration Guide](FREELLMAPI_CONFIG.md)` - File didn't exist (inconsistent capitalization)
 
 **Action Taken**:
 
@@ -111,7 +111,7 @@ All broken internal documentation links have been identified, fixed, and verifie
 
 ### 4. guides/04-litellm-config.md
 
-**Previous Link**: `[LiteLLM Configuration Guide](../LITEllm-config.md)` - File didn't exist (inconsistent capitalization)
+**Previous Link**: `[LiteLLM Configuration Guide](LITELLM_CONFIG.md)` - File didn't exist (inconsistent capitalization)
 
 **Action Taken**:
 
@@ -126,7 +126,7 @@ All broken internal documentation links have been identified, fixed, and verifie
 
 ### 5. guides/05-claude-code-config.md
 
-**Previous Link**: `[Claude Code Configuration Guide](../CLAUDE-code-config.md)` - File didn't exist (inconsistent capitalization)
+**Previous Link**: `[Claude Code Configuration Guide](CLAUDE_CODE_CONFIG.md)` - File didn't exist (inconsistent capitalization)
 
 **Action Taken**:
 
@@ -141,7 +141,7 @@ All broken internal documentation links have been identified, fixed, and verifie
 
 ### 6. guides/08-maintenance.md
 
-**Previous Link**: `[Maintenance Guide](../MAINTENANCE.md)` - File didn't exist
+**Previous Link**: `[Maintenance Guide](MAINTENANCE.md)` - File didn't exist
 
 **Action Taken**:
 
